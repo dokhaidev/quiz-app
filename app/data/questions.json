@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "question": "Thủ đô của Việt Nam là thành phố nào?",
+    "options": [
+      "Hải Phòng",
+      "Đà Nẵng",
+      "Hà Nội",
+      "TP. Hồ Chí Minh"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "id": 2,
+    "question": "Biển số xe của tỉnh Thừa Thiên Huế là bao nhiêu?",
+    "options": [
+      "73",
+      "74",
+      "75",
+      "76"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "id": 3,
+    "question": "Đỉnh núi cao nhất Việt Nam thuộc dãy núi nào?",
+    "options": [
+      "Dãy Trường Sơn",
+      "Dãy Hoàng Liên Sơn",
+      "Dãy Bạch Mã",
+      "Dãy Ngọc Linh"
+    ],
+    "correctAnswer": 1
+  },
+  {
+    "id": 4,
+    "question": "Áo dài Việt Nam thường được mặc vào dịp nào?",
+    "options": [
+      "Chỉ trong các lễ hội truyền thống",
+      "Chỉ trong ngày cưới",
+      "Trong nhiều dịp khác nhau cả trang trọng và thường ngày",
+      "Chỉ dành cho nữ giới"
+    ],
+    "correctAnswer": 2
+  },
+  {
+    "id": 5,
+    "question": "Món ăn nào sau đây là đặc sản của Hà Nội?",
+    "options": [
+      "Bánh xèo",
+      "Cao lầu",
+      "Phở",
+      "Bún bò Huế"
+    ],
+    "correctAnswer": 2
+  }
+]
