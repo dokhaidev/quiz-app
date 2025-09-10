@@ -7,34 +7,29 @@ import { Question } from './types/types';
 export default function QuizApp() {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
-  const [showResultPopup, setShowResultPopup] = useState<boolean>(false);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
 
   const question: Question = questionsData[currentQuestion];
   const isLastQuestion = currentQuestion === questionsData.length - 1;
 
   const handleAnswerSelect = (index: number): void => {
+    if (selectedAnswer !== null) return; // Ngăn chọn lại sau khi đã chọn
+    
     setSelectedAnswer(index);
-  };
-
-  const handleSubmit = (): void => {
-    if (selectedAnswer === question.correctAnswer) {
+    
+    // Tự động kiểm tra kết quả
+    if (index === question.correctAnswer) {
       setScore(score + 1);
     }
-    setShowResult(true);
-    setShowResultPopup(true);
   };
 
   const handleNextQuestion = (): void => {
     if (currentQuestion < questionsData.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(null);
-      setShowResult(false);
     } else {
       setQuizFinished(true);
-      setShowResultPopup(true);
     }
   };
 
@@ -42,88 +37,47 @@ export default function QuizApp() {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
       setSelectedAnswer(null);
-      setShowResult(false);
     }
   };
 
   const restartQuiz = (): void => {
     setCurrentQuestion(0);
     setSelectedAnswer(null);
-    setShowResult(false);
     setScore(0);
     setQuizFinished(false);
-    setShowResultPopup(false);
   };
-
-  // Đóng popup khi nhấn ESC
-  useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setShowResultPopup(false);
-      }
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4 relative">
-      {/* Popup kết quả */}
-      {showResultPopup && (
+      {/* Popup kết thúc quiz */}
+      {quizFinished && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full transform transition-all duration-300 scale-100 opacity-100">
             <div className="text-center">
-              <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center ${quizFinished ? 'bg-indigo-100' : 'bg-green-100'}`}>
-                <svg className={`w-8 h-8 ${quizFinished ? 'text-indigo-600' : 'text-green-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  {quizFinished ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  )}
+              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center bg-indigo-100">
+                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-gray-800 mt-4">
-                {quizFinished ? 'Chúc mừng!' : 'Kết quả'}
+                Chúc mừng!
               </h3>
               <p className="text-gray-600 mt-2">
-                {quizFinished 
-                  ? `Bạn đã hoàn thành bài quiz với ${score}/${questionsData.length} điểm!`
-                  : selectedAnswer === question.correctAnswer 
-                    ? 'Chính xác! Câu trả lời của bạn đúng.' 
-                    : `Sai rồi! Đáp án đúng là: ${question.options[question.correctAnswer]}`
-                }
+                Bạn đã hoàn thành bài quiz với {score}/{questionsData.length} điểm!
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                {quizFinished ? (
-                  <>
-                    <button
-                      onClick={restartQuiz}
-                      className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors flex-1"
-                    >
-                      Làm lại
-                    </button>
-                    <button
-                      onClick={() => setShowResultPopup(false)}
-                      className="px-6 py-3 bg-white text-gray-800 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex-1"
-                    >
-                      Đóng
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setShowResultPopup(false);
-                      if (isLastQuestion) {
-                        setQuizFinished(true);
-                      } else {
-                        handleNextQuestion();
-                      }
-                    }}
-                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
-                  >
-                    {isLastQuestion ? 'Xem kết quả cuối cùng' : 'Tiếp tục'}
-                  </button>
-                )}
+                <button
+                  onClick={restartQuiz}
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors flex-1"
+                >
+                  Làm lại
+                </button>
+                <button
+                  onClick={() => setQuizFinished(false)}
+                  className="px-6 py-3 bg-white text-gray-800 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex-1"
+                >
+                  Đóng
+                </button>
               </div>
             </div>
           </div>
@@ -166,31 +120,41 @@ export default function QuizApp() {
               <div
                 key={index}
                 className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                  selectedAnswer === index
-                    ? index === question.correctAnswer && showResult
-                      ? 'bg-green-50 border-green-500'
-                      : showResult
-                      ? 'bg-red-50 border-red-500'
-                      : 'bg-indigo-50 border-indigo-500'
+                  selectedAnswer !== null
+                    ? index === question.correctAnswer
+                      ? 'bg-green-100 border-green-500 font-semibold'
+                      : selectedAnswer === index
+                      ? 'bg-red-100 border-red-500'
+                      : 'bg-gray-50 border-gray-200'
                     : 'bg-gray-50 border-gray-200 hover:bg-indigo-50 hover:border-indigo-300'
-                }`}
-                onClick={() => !showResult && handleAnswerSelect(index)}
+                } ${selectedAnswer !== null ? 'cursor-default' : 'cursor-pointer'}`}
+                onClick={() => handleAnswerSelect(index)}
               >
                 <div className="flex items-center">
                   <div className={`w-8 h-8 rounded-full mr-4 border-2 flex items-center justify-center font-medium text-lg ${
-                    selectedAnswer === index
-                      ? index === question.correctAnswer && showResult
+                    selectedAnswer !== null
+                      ? index === question.correctAnswer
                         ? 'bg-green-500 border-green-500 text-white'
-                        : showResult
+                        : selectedAnswer === index
                         ? 'bg-red-500 border-red-500 text-white'
-                        : 'bg-indigo-500 border-indigo-500 text-white'
+                        : 'bg-white border-gray-300 text-gray-600'
                       : 'bg-white border-gray-300 text-gray-600'
                   }`}>
-                    {selectedAnswer === index && showResult ? (
-                      index === question.correctAnswer ? '✓' : '✗'
-                    ) : String.fromCharCode(65 + index)}
+                    {selectedAnswer !== null
+                      ? index === question.correctAnswer
+                        ? '✓'
+                        : selectedAnswer === index
+                        ? '✗'
+                        : String.fromCharCode(65 + index)
+                      : String.fromCharCode(65 + index)}
                   </div>
-                  <span className="text-gray-800 text-lg">{option}</span>
+                  <span className={`text-lg ${
+                    selectedAnswer !== null && index === question.correctAnswer 
+                      ? 'font-bold text-green-800' 
+                      : 'text-gray-800'
+                  }`}>
+                    {option}
+                  </span>
                 </div>
               </div>
             ))}
@@ -213,38 +177,16 @@ export default function QuizApp() {
             
             <button
               onClick={handleNextQuestion}
-              disabled={!showResult && isLastQuestion}
+              disabled={selectedAnswer === null}
               className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                !showResult && isLastQuestion
+                selectedAnswer === null
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-gray-600 text-white hover:bg-gray-700'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
               }`}
             >
-              Câu sau →
+              {isLastQuestion ? 'Kết thúc' : 'Câu sau →'}
             </button>
           </div>
-          
-          {/* Chỉ hiển thị nút Kiểm tra khi ở câu cuối cùng và chưa xem kết quả */}
-          {isLastQuestion && !showResult ? (
-            <button
-              className={`px-8 py-3 rounded-xl font-medium transition-all duration-200 text-lg ${
-                selectedAnswer === null
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg'
-              }`}
-              onClick={handleSubmit}
-              disabled={selectedAnswer === null}
-            >
-              Kiểm tra
-            </button>
-          ) : showResult ? (
-            <button
-              className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg text-lg"
-              onClick={() => setShowResultPopup(true)}
-            >
-              Xem kết quả
-            </button>
-          ) : null}
         </div>
       </div>
     </div>
